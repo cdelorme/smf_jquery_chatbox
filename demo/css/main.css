@@ -1,0 +1,45 @@
+/* Shoddy CSS Reset for Demo */
+* {
+	margin: 0;
+	padding: 0;
+}
+
+/* Basic Chatbox Formatting */
+.chatBox {
+	width: 800px;
+	margin: 0 auto;
+}
+#chatMessages, #pubChat, #result {
+	width: 100%;
+}
+#pubChat input[type=text] {
+	padding: 3px;
+	border-radius: 8px;
+	width: 80%;
+}
+#pubChat input[type=submit] {
+	border-radius: 8px;
+	font-size: 16px;
+	padding: 5px;
+}
+#chatMessages {
+	min-height: 250px;
+	margin-bottom: 15px;
+}
+#chatMessages div {
+    font-size: 12px;
+	font-family: Helvetica, Georgia, sans-serif;
+    line-height: 16px;
+}
+#chatMessages div:hover {
+	opacity: 0.75;
+}
+.datestamp {
+	font-size: 10px;
+	font-style: italic;
+	margin-right: 8px;
+}
+.username {
+	margin-right: 10px;
+	font-weight: bold;
+}
