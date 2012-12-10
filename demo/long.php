@@ -9,24 +9,22 @@
 	<link href="./css/main.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
-	<div class='chatBox'>
-		<form method='post' id='pubChat'>
-		<div id='chatMessages'></div>
-			<input type='text' name='message' />
-			<input type='submit' value='Send...'/>
-		</form>
-	</div>
+	<form method='post' id='chatBox'>
+		<p><input type='text' name='message' /> <input type='submit' value='Send...'/></p>
+	</form>
 	<script type='text/javascript'>
-		var cb = $("#pubChat").first().chatBox({
-			pollURL: './php/short.php',
-			publishURL: './php/long.php',
-			messageInput: 'input[name=message]',
-			subscribeURL: './php/chat.php',
-			formName: '#pubChat',
-			messageBoxName: '#chatMessages',
-			maxMessages: 18,
-			type: "long"
+
+		// Pass Chatbox to establish instance
+		var cb = $("#chatBox").chatBox({
+			options: {
+				type: 'long'
+			},
+			paths: {
+				xhrPost: "/php/xhrPost.php",
+				xhrPoll: "/php/xhrPoll.long.php"
+			}
 		});
+
 	</script>
 	<p>Long Polling is not supported by all server platforms, this script has been tested with nGinx specifically and may not work with Apache Servers.  The benefits of Long Polling are often swifter responses to connected clients and reduced HTTP requests at the cost of sustained client connectivity.</p>
 </body>

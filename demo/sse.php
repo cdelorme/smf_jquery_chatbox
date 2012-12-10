@@ -17,15 +17,16 @@
 		// Pass Chatbox to establish instance
 		var cb = $("#chatBox").chatBox({
 			options: {
-				display: 'up'
+				type: "long"
 			},
 			paths: {
 				xhrPost: "/php/xhrPost.php",
-				xhrPoll: "/php/xhrPoll.short.php"
+				xhrPoll: "/php/xhrPoll.short.php",
+				ssePoll: "/php/ssePoll.php"
 			}
 		});
 
 	</script>
-	<p>Otherwise simply called "polling", was the first standard implementation, and continues to be used by most services due to wide support with all platforms.</p>
+	<p>Demonstration using SSE for Polling and regular AJAX for post operations.</p>
 </body>
 </html>
