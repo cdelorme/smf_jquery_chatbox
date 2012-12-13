@@ -312,4 +312,7 @@
 		return this;
 	};
 
+	// Make CB accessible in Global Namespace
+	window.chatBox = window.chatBox || ns;
+
 })(jQuery);

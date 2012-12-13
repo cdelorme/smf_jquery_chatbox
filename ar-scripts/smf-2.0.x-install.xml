@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<!DOCTYPE modification SYSTEM "http://www.simplemachines.org/xml/modification">
+<modification xmlns="http://www.simplemachines.org/xml/modification" xmlns:smf="http://www.simplemachines.org/">
+	<name>SMF-ChatBox</name>
+	<id>CDeLorme:SMF-ChatBox</id>
+	<version>1.0</version>
+	<homepage>http://www.cdelorme.com</homepage>
+
+
+	<file name="$themedir/index.template.php">
+		<operation>
+			<search position="before"><![CDATA[	// Output any remaining HTML headers. (from mods, maybe?)
+	echo $context['html_headers'];]]></search>
+			<add><![CDATA[
+
+	// BEGIN SMF-CHATBOX
+	echo '
+	<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />';
+	echo '
+	<script type="text/javascript"  src="/chat/js/chatbox.js?' . time() . '"></script>';
+	if ($context['user']['is_admin']) echo '
+	<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
+	echo '
+	<style type="text/css">
+		.chat { float: left; }
+	</style>';
+	// END SMF-CHATBOX
+
+]]></add>
+		</operation>
+
+<!--
+Below Operations need to be modified to replace the reset section and add it where the myAvatar is.
+This is provided it exists in the same form in all three themes.
+-->
+
+		<operation>
+
+			<search position="before"><![CDATA[call_user_func(smf_main());]]></search>
+
+			<add><![CDATA[
+	<!--Begin SMF-ChatBox-->
+	<form method="post" id="chatBox">
+		<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
+	</form>
+	<script type="text/javascript">
+	<!--// Cloaking
+		// Pass Chatbox to establish instance
+		var cb = $("#chatBox").chatBox({
+			options: {
+				display: "up"
+			},
+			paths: {
+				xhrPost: "/php/xhrPost.php",
+				xhrPoll: "/php/xhrPoll.short.php"
+			}
+		});
+	//-->
+	</script>
+	<!--End SMF-ChatBox-->]]></add>
+
+		</operation>
+
+
+	</file>
+
+
+
+<!--
+
+
+	<form method='post' id='chatBox'>
+		<p><input type='text' name='message' /> <input type='submit' value='Send...'/></p>
+	</form>
+	<script type='text/javascript'>
+
+		// Pass Chatbox to establish instance
+		var cb = $("#chatBox").chatBox({
+			options: {
+				display: 'up'
+			},
+			paths: {
+				xhrPost: "/php/xhrPost.php",
+				xhrPoll: "/php/xhrPoll.short.php"
+			}
+		});
+
+	</script>
+
+-->
+
+	<file name="$boarddir/index.php">
+		<operation>
+			<search position="before"><![CDATA[require_once($sourcedir . '/Security.php');]]></search>
+			<add><![CDATA[
+require_once($sourcedir . '/Subs-Shoutbox.php');]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[call_user_func(smf_main());]]></search>
+			<add><![CDATA[// SMFPacks Shoutbox
+call_user_func(Shoutbox_Load(smf_main()));]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA['viewquery', 'viewsmfile']]></search>
+			<add><![CDATA['viewquery', 'viewsmfile', 'shoutbox']]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA['sendtopic' => array('SendTopic.php', 'EmailUser'),]]></search>
+			<add><![CDATA[
+		// SMFPacks Shoutbox
+		'shoutbox' => array('Shoutbox.php', 'Shoutbox'),]]></add>
+		</operation>
+	</file>
+	<file name="$sourcedir/Admin.php">
+		<operation>
+			<search position="after"><![CDATA['featuresettings' => array(]]></search>
+			<add><![CDATA['shoutbox' => array(
+					'label' => $txt['sba_link'],
+					'file' => 'ManageShoutbox.php',
+					'function' => 'ManageShoutbox',
+					'icon' => 'support.gif',
+				),
+				]]></add>
+		</operation>
+	</file>
+	<file name="$sourcedir/ManagePermissions.php">
+		<operation>
+			<search position="before"><![CDATA[			'karma_edit' => array(false, 'general', 'moderate_general'),]]></search>
+			<add><![CDATA[
+			// SMFPacks Shoutbox -->
+			'karma_edit' => array(false, 'general', 'moderate_general'),
+			'shoutbox_view' => array(false, 'shoutbox', 'shoutbox'),
+			'shoutbox_post' => array(false, 'shoutbox', 'shoutbox'),
+			'shoutbox_edit' => array(false, 'shoutbox_panel', 'shoutbox_panel'),
+			'shoutbox_delete' => array(false, 'shoutbox_panel', 'shoutbox_panel'),
+			'shoutbox_prune' => array(false, 'shoutbox_panel', 'shoutbox_panel'),
+			'shoutbox_ban' => array(false, 'shoutbox_panel', 'shoutbox_panel'),
+			// SMFPacks Shoutbox]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[				'general',]]></search>
+			<add><![CDATA[
+				'shoutbox',
+				'shoutbox_panel',]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[				'view_basic_info',]]></search>
+			<add><![CDATA[
+				'shoutbox',
+				'shoutbox_panel',]]></add>
+		</operation>
+		<operation>
+			<search position="before"><![CDATA[$context['non_guest_permissions'] = array(]]></search>
+			<add><![CDATA[
+		// SMFPacks Shoutbox -->
+		'shoutbox_post',
+		'shoutbox_edit',
+		'shoutbox_delete',
+		'shoutbox_prune',
+		'shoutbox_ban',
+		// <-- SMFPacks Shoutbox]]></add>
+		</operation>
+	</file>
+	<file name="$sourcedir/Load.php">
+		<operation>
+			<search position="replace"><![CDATA[$context['browser']['is_ie'] = $context['browser']['is_ie4'] || $context['browser']['is_ie5'] || $context['browser']['is_ie5.5'] || $context['browser']['is_ie6'] || $context['browser']['is_ie7'] || $context['browser']['is_ie8'];]]></search>
+			<add><![CDATA[$context['browser']['is_ie'] = !$context['browser']['is_opera'] && !$context['browser']['is_gecko'] && !$context['browser']['is_web_tv'] && preg_match('~MSIE \d~', $_SERVER['HTTP_USER_AGENT']) == 1;]]></add>
+		</operation>
+		<operation>
+			<search position="replace"><![CDATA[$context['browser']['ie_standards_fix'] = !$context['browser']['is_ie8'];]]></search>
+			<add><![CDATA[$context['browser']['ie_standards_fix'] = $context['browser']['is_ie4'] || $context['browser']['is_ie5'] || $context['browser']['is_ie5.5'] || $context['browser']['is_ie6'] || $context['browser']['is_ie7'];]]></add>
+		</operation>
+	</file>
+	<file name="$themedir/index.template.php">
+		<operation>
+			<search position="after"><![CDATA[}
+
+function template_body_below()
+{]]></search>
+			<add><![CDATA[	//SMFPacks Shoutbox -->
+	if (function_exists('template_shoutbox')) template_shoutbox('main');
+	// <-- SMFPacks Shoutbox
+]]></add>
+		</operation>
+	</file>
+	<file name="$languagedir/Modifications.english.php">
+		<operation>
+			<search position="end" />
+			<add><![CDATA[// SMFPacks Shoutbox -->
+$txt['sba_title'] = 'Shoutbox';
+$txt['sba_link'] = 'Shoutbox';
+
+$txt['permissiongroup_shoutbox'] = 'Shoutbox';
+$txt['permissiongroup_simple_shoutbox'] = 'Shoutbox';
+$txt['permissionname_shoutbox_view'] = 'View Shoutbox';
+$txt['permissionname_shoutbox_post'] = 'Post messages in Shoutbox';
+$txt['permissiongroup_shoutbox_panel'] = 'Shoutbox Moderation Panel';
+$txt['permissiongroup_simple_shoutbox_panel'] = 'Shoutbox Moderation Panel';
+$txt['permissionname_shoutbox_edit'] = 'Edit messages in Shoutbox';
+$txt['permissionname_shoutbox_delete'] = 'Delete messages in Shoutbox';
+$txt['permissionname_shoutbox_prune'] = 'Empty Shoutbox';
+$txt['permissionname_shoutbox_ban'] = 'Ban users in Shoutbox';
+// <-- SMFPacks Shoutbox
+]]></add>
+		</operation>
+	</file>
+</modification>
