@@ -1,32 +1,30 @@
 
-So, SSI.php is the core, import that and everything else is good.
+Update Git Repo
 
-Next step create icons for delete & ban.
+The next step will be choosing a jQuery color picker to allow users to set their own colors for Background and Foreground.  Then JS events and AJAX to handle setting those to the DB.
 
-Note all scripts, icons, and server scripts will be in the /chat folder, which will be moved to root during install.
+Integrate chadmin.php page for administration.
 
-Referencing that directory saves me from having to tinker with the absurd theme system.
+- Add Bans by user_id
+- List Banned Users
+- Remove users from Banned List
+- Delete Chat Messages by id
 
-I may or may not append CSS to themes from the script, I might import a css from the chat folder, again because of how gay that system is.
+Create a history.php page to view old messages.
+How do we make that work?
 
 
-Once I get the files created and the server scripts updated to use SSI.php, I can begin testing the ChatBox integration on the site via manual code.
+---
 
-Once I get that working, and the delete operation etc, I can finish any changes I need to the install script.
+SSI.php included for integration with SMF.
+Can then access and run core functions!
 
-I can remove the manual additions, and test the package manager installation.
-
-Once finished I can move it, woot!~
+Need to establish some basic CSS that is non-colored for theme independence.
 
 
 ---
 
 Steps:
-
-3. Test manually adding the CB code to the Back n Black theme
-
-	- Ensure the location is identifiable in the default theme too
-	- Identify the location & Update install script
 
 4. Update Server Scripts & Begin testing New ChatBox
 

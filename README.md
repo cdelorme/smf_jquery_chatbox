@@ -1,23 +1,19 @@
 
-# Project: jQuery AJAX Chat Plugin
-## Date: 11/26/2012
+# Project: SMF ChatBox
+## Date: 12/12/2012
 ## Author: Casey DeLorme
 
 ---
 
 ## Description:
 
-This is my first jQuery plugin.
+This is a fork of my jQuery AJAX ChatBox revised for use with the Simple Machines Forum software.
 
-It allows you to extend a basic form into a ChatBox object with a variety of customizations.
+The instructions remain the same, however it includes a package installation script and a whole folder, plus administrative operations and has been tailored to work with SMF.
 
 It supports Short and Long AJAX (XHR) Polling, Server-Sent Events (SSE/EventSource), and (**eventually**) WebSockets for communication.
 
 It will (**eventually**) take advantage of SharedWorkers in supported browsers to mitigate load for multi-tabbed browsing.
-
-For demonstrative purposes, server-side scripts are supplied with functional (not-secured) examples for each type of communication.
-
-**An installation script may be supplied in future revisions to establish the required table.**
 
 ---
 
@@ -151,5 +147,3 @@ This was tested extensively on an nginx server with success using Long Polling w
 - SharedWorker Implementation
 - WebSocket Implementation
 - node.js demo WebSocket Script
-- PHP Installation Script
-- Forked Implementation for SimpleMachine Forums

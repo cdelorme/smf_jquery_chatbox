@@ -16,7 +16,7 @@
 	<uninstall for="2.0 - 2.0.99">
 		<modification reverse="true">ar-scripts/smf-2.0.x-install.xml</modification>
 		<modification reverse="true">themes/smf-2.0.x.install.xml</modification>
-		<remove-dir name="chat" destination="$boarddir" />
+		<remove-dir name="$boarddir/chat" />
 		<database>ar-scripts/smf-2.0.x-uninstall.php</database>
 	</uninstall>
 </package-info>

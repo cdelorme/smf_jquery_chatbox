@@ -5,6 +5,35 @@
 [center][url=https://bitbucket.org/CDeLorme/smf-chatbox][b]BitBucket Repository[/b][/url][/center]
 [hr]
 
+
+[b]Instructions[/b]:
+
+If the installation fails to modify your theme, adding the chatbox can be done manually by adding jQuery, the ChatBox JavaScript file, and then copying these lines to the location you want the chatbox to be added:
+
+	<!--Begin SMF-ChatBox-->
+	<div class="chat">
+		<form method="post" id="chatBox">
+			<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
+		</form>
+		<script type="text/javascript">
+		<!--// Cloaking
+			// Pass Chatbox to establish instance
+			var cb = $("#chatBox").chatBox({
+				options: {
+					type: "long"
+				},
+				paths: {
+					xhrPost: "/chat/xhrPost.php",
+					xhrPoll: "/chat/xhrPoll.long.php",
+					ssePoll: "/chat/ssePoll.php"
+				}
+			});
+		//-->
+		</script>
+	</div>
+	<!--End SMF-ChatBox-->
+
+
 [b]Important Info[/b]:
 
 This ChatBox requires jQuery, but to prevent duplicate copies it is not installed by the install script.  Please add jQuery to your themes from an API such as Google, or upload your own copy.
