@@ -14,8 +14,7 @@ p {
   /* Basic Chatbox Formatting */
 #chatBox {
 	width: 800px;
-	margin: 20px auto;
-	margin-bottom: 15px;
+	margin: 0 auto;
 }
 #chatBox form, .chatMessages {
 	width: 100%;
@@ -34,8 +33,14 @@ p {
 
   /* Messages Formatting */
 #chatBox>div {
-	max-height: 180px;
+	max-height: 160px;
 	overflow-y: scroll;
+}
+#chatBox>p {
+	margin: 3px 0;
+}
+#chatBox>p input[type='text'] {
+	width: 80%;
 }
 #chatBox>div div {
     font-size: 12px;
