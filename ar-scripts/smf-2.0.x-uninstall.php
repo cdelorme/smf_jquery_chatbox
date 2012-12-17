@@ -18,8 +18,11 @@ if (file_exists(dirname(__FILE__) . "/../../SSI.php")) {
 	if (!require(dirname(__FILE__) . "/../../SSI.php")) return false;
 }
 
+// Confirm if allowed to
+isAllowedTo('admin_forum');
+
 // Delete Old Table
-$smcFunc['db_query']('', "DROP TABLE IF EXISTS {$db_prefix}chat");
+$smcFunc['db_query']('', 'DROP TABLE IF EXISTS {db_prefix}chat');
 
 // If Error Quit
 $db_error = @$smcFunc['db_error']($db_connection);
@@ -29,7 +32,7 @@ if ($db_error) {
 }
 
 // Delete Old Table
-$smcFunc['db_query']('', "DROP TABLE IF EXISTS {$db_prefix}chat_banned");
+$smcFunc['db_query']('', 'DROP TABLE IF EXISTS {db_prefix}chat_banned');
 
 // If Error Quit
 $db_error = @$smcFunc['db_error']($db_connection);
@@ -39,7 +42,7 @@ if ($db_error) {
 }
 
 // Delete Old Table
-$smcFunc['db_query']('', "DROP TABLE IF EXISTS {$db_prefix}chat_colors");
+$smcFunc['db_query']('', 'DROP TABLE IF EXISTS {db_prefix}chat_colors');
 
 // If Error Quit
 $db_error = @$smcFunc['db_error']($db_connection);

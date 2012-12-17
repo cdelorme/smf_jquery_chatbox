@@ -1,58 +1,38 @@
-  /* Shoddy CSS Reset for Demo */
-* {
-	margin: 0;
-	padding: 0;
-}
 
-
-  /* Default Formatting */
-p {
-	margin: 20px 35px 20px;
-}
-
-
-  /* Basic Chatbox Formatting */
+  /* Basic Non-Themed Chatbox Formatting */
 #chatBox {
 	width: 800px;
+	max-height: 200px;
 	margin: 0 auto;
-}
-#chatBox form, .chatMessages {
-	width: 100%;
-}
-#chatBox form input[type=text] {
-	padding: 3px;
-	border-radius: 8px;
-	width: 80%;
-}
-#chatBox form input[type=submit] {
-	border-radius: 8px;
-	font-size: 16px;
-	padding: 5px;
-}
-
-
-  /* Messages Formatting */
-#chatBox>div {
-	max-height: 160px;
-	overflow-y: scroll;
+	overflow: hidden;
 }
 #chatBox>p {
 	margin: 3px 0;
 }
-#chatBox>p input[type='text'] {
-	width: 80%;
+#chatBox>p input[type=text] {
+	padding: 5px;
+	font-size: 14px;
+	border-radius: 8px;
+	width: 70%;
+}
+#chatBox>p input[type=submit] {
+	border-radius: 8px;
+	font-size: 16px;
+	padding: 5px;
+	margin-right: 10px;
+}
+#chatBox>div {
+	max-height: 150px;
+	overflow-y: scroll;
 }
 #chatBox>div div {
-    font-size: 12px;
+	font-size: 14px;
 	font-family: Helvetica, Georgia, sans-serif;
     line-height: 16px;
 }
 #chatBox>div div:hover {
 	opacity: 0.75;
 }
-
-
-  /* Message Component Formatting */
 #chatBox>div .datestamp {
 	font-size: 10px;
 	font-style: italic;
@@ -61,4 +41,22 @@ p {
 #chatBox>div .username {
 	margin-right: 10px;
 	font-weight: bold;
+}
+#chatBox>div div .admin {
+	float: right;
+	margin-right: 10px;
+}
+#chatBox>div .admin .ban {
+	float: left;
+	display: block;
+	width: 24px;
+	height: 16px;
+	background: url('/chat/images/ban.png');
+}
+#chatBox>div .admin .del {
+	float: left;
+	display: block;
+	width: 19px;
+	height: 16px;
+	background: url('/chat/images/delete.png');
 }

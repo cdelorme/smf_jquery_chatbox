@@ -5,6 +5,31 @@
 	<id>CDeLorme:SMF-ChatBox</id>
 	<version>1.0</version>
 	<homepage>http://www.cdelorme.com</homepage>
+	<file name="$sourcedir/ManagePermissions.php">
+		<!--Add Permissions-->
+		<operation>
+			<search position="before"><![CDATA[$permissionList = array(
+		'membergroup' => array(]]></search>
+			<add><![CDATA[
+			// SMF-ChatBox Permissions - BEGIN
+			'admin_chatbox' => array(false, 'smfchatbox', 'smfchatbox'),
+			// SMF-ChatBox Permissions - END
+			]]></add>
+		</operation>
+	</file>
+	<!--Add Permissions Text-->
+	<file name="$languagedir/Modifications.english.php" error="skip">
+		<operation error="ignore">
+			<search position="after"><![CDATA[?>]]></search>
+			<add><![CDATA[
+// SMF-ChatBox - BEGIN
+$txt['permissiongroup_smfchatbox'] = 'SMF ChatBox';
+$txt['permissiongroup_simple_smfchatbox'] = 'SMF ChatBox';
+$txt['permissionname_admin_chatbox'] = 'Modarate Chatbox';
+// SMF-ChatBox - END
+			]]></add>
+		</operation>
+	</file>
 	<file name="$themedir/index.template.php">
 		<!--All Themes-->
 		<operation>
@@ -12,17 +37,20 @@
 	echo $context['html_headers'];]]></search>
 			<add><![CDATA[
 
+
 	// BEGIN SMF-CHATBOX
-	echo '
-	<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />';
-	echo '
-	<script type="text/javascript"  src="/chat/js/chatbox.js?' . time() . '"></script>';
-	if ($context['user']['is_admin']) echo '
-	<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
-	echo '
-	<style type="text/css">
-		.chat { float: left; }
-	</style>';
+	if (empty($context['current_board']) && empty($context['current_topic'])) {
+		echo '
+		<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />';
+		echo '
+		<script type="text/javascript"  src="/chat/js/chatbox.js?' . time() . '"></script>';
+		if (isAllowedTo('admin_chatbox') || $context['user']['is_admin']) echo '
+		<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
+		echo '
+		<style type="text/css">
+			.chat { float: left; }
+		</style>';
+	}
 	// END SMF-CHATBOX
 
 ]]></add>
@@ -163,6 +191,7 @@
 				</div>';
 
 		/* Begin SMF-ChatBox*/
+		if (empty($context['current_board']) && empty($context['current_topic'])) {
 		echo '
 			<!--Begin SMF-ChatBox-->
 			<div class="chat">
@@ -173,19 +202,16 @@
 				<!--// Cloaking
 					// Pass Chatbox to establish instance
 					var cb = $("#chatBox").chatBox({
-						options: {
-							type: "long"
-						},
 						paths: {
 							xhrPost: "/chat/xhrPost.php",
-							xhrPoll: "/chat/xhrPoll.long.php",
-							ssePoll: "/chat/ssePoll.php"
+							xhrPoll: "/chat/xhrPoll.short.php"
 						}
 					});
 				//-->
 				</script>
 			</div>
 			<!--End SMF-ChatBox-->';
+		}
 		/* End SMF-ChatBox*/
 
 		echo '
@@ -324,29 +350,27 @@
 			</p>';
 
 		/* Begin SMF-ChatBox*/
-		echo '
-			<!--Begin SMF-ChatBox-->
-			<div class="chat">
-				<form method="post" id="chatBox">
-					<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
-				</form>
-				<script type="text/javascript">
-				<!--// Cloaking
-					// Pass Chatbox to establish instance
-					var cb = $("#chatBox").chatBox({
-						options: {
-							type: "long"
-						},
-						paths: {
-							xhrPost: "/chat/xhrPost.php",
-							xhrPoll: "/chat/xhrPoll.long.php",
-							ssePoll: "/chat/ssePoll.php"
-						}
-					});
-				//-->
-				</script>
-			</div>
-			<!--End SMF-ChatBox-->';
+		if (empty($context['current_board']) && empty($context['current_topic'])) {
+			echo '
+				<!--Begin SMF-ChatBox-->
+				<div class="chat">
+					<form method="post" id="chatBox">
+						<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
+					</form>
+					<script type="text/javascript">
+					<!--// Cloaking
+						// Pass Chatbox to establish instance
+						var cb = $("#chatBox").chatBox({
+							paths: {
+								xhrPost: "/chat/xhrPost.php",
+								xhrPoll: "/chat/xhrPoll.short.php"
+							}
+						});
+					//-->
+					</script>
+				</div>
+				<!--End SMF-ChatBox-->';
+		}
 		/* End SMF-ChatBox*/
 
 	}

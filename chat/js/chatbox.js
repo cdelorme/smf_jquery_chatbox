@@ -47,36 +47,37 @@
 		} else {
 			for (var x = total.size(); x > this.options.maxMessages; x--) $(total[x]).slideUp(200, function() { $(this).remove(); });
 		}
+		this.scrollEvent();
 	};
 
-	// Render new Messages
+	// Render Message
+	ns.renderMessage = function(data) {
+		var ts = $('<span>').append("[" +this.stampTime(data.created_on) + "]").addClass('datestamp');
+		var u = $('<span>').append(data.username).addClass('username');
+		if (data.user_color) u.css('color', data.user_color);
+		var div = $('<div>').append(ts).append(u).append(data.message).attr('id', 'messageid-' + data.id);
+		if (data.background) div.css('background', data.background);
+		if (data.color) div.css('color', data.color);
+		return div;
+	}
+
+	// Render New Messages
 	ns.renderNewMessages = function(data) {
-		var div = "";
-		var that = this;
+		var divs = [];
+		for (var x = 0, len = data.length; x < len; x++) divs[divs.length] = this.renderMessage(data[x]);
 		if (this.options.display == 'down') {
-			for (var x = data.length - 1; x >= 0; x--) div += "<div><span class='datestamp'>[" + this.stampTime(data[x].created_on) + "]</span><span class='username'>" + data[x].username + ":</span>" + data[x].message + "</div>";
+			for (var x = divs.length - 1; x >= 0; x--) divs[x].appendTo(this.messageDisplay).slideDown(200);
 		} else {
-			for (var x = 0, len = data.length; x < data.length; x++) div += "<div><span class='datestamp'>[" + this.stampTime(data[x].created_on) + "]</span><span class='username'>" + data[x].username + ":</span>" + data[x].message + "</div>";
+			for (var x = 0, len = divs.length; x < data.length; x++) divs[x].prependTo(this.messageDisplay).slideDown(200);
 		}
-		div = $(div).hide();
-		if (this.options.display == 'down') {
-			this.messageDisplay.append(div);
-		} else {
-			this.messageDisplay.prepend(div);
-		}
-		div.slideDown(200, function() { that.scrollEvent(); });
 	};
 
 	// Scroll to top or bottom of chatbox
 	ns.scrollEvent = function() {
 		if (this.options.display == 'down') {
-			this.messageDisplay.animate({
-				scrollTop: this.messageDisplay.height()
-			}, 0);
+			this.messageDisplay.scrollTop(this.messageDisplay.prop('scrollHeight'));
 		} else {
-			this.messageDisplay.animate({
-				scrollTop: 0
-			}, 0);
+			this.messageDisplay.scrollTop(0);
 		}
 	};
 
@@ -151,58 +152,31 @@
 		}
 	};
 
-	// Deconstruct SSE
-	ns.destructSSE = function() {
-		if (this.sse) {
-			this.sse.close();
-			this.sse.removeEventListener('message');
-			this.sse.close();
-			delete this.sse;
-		}
-	};
-
-	// Create SSE Object (EventSource)
-	ns.createSSE = function() {
-		if (!this.sse) {
-			var that = this;
-			var ssePath = this.paths.ssePoll;
-			if (ssePath.indexOf("?") == -1) ssePath += "?";
-			ssePath += "maxMessages=" + this.options.maxMessages;
-			ssePath += "&last=" + this.lastMessage;
-			if (this.options.type == 'long') ssePath += "&type=long";
-			if (this.options.type == 'short') ssePath += "&retry=" + this.timing.poll;
-			this.sse = new EventSource(ssePath);
-			this.sse.addEventListener('message', function(data) { that.message(data) }, false);
-		}
-	};
-
 	// Poll server for new messages, or prepare poll utility
 	ns.poll = function(post) {
 		if (this.active) {
 			if (this.paths.websocketPoll && window.WebSocket) {// WebSocket Check
 				if (!this.webSocket) this.createWebSocket();
-			} else if (this.paths.ssePoll && window.EventSource) {// SSE Check
-				if (!this.sse) this.createSSE();
-			} else if (this.paths.xhrPoll) {// xhr Check
+			} else if (this.paths.xhr) {// xhr Check
 				var that = this;
 				if (this.options.type == 'short') {
 					$.ajax({
-						url: this.paths.xhrPoll,
+						url: this.paths.xhr,
 						dataType: 'json',
 						type: 'get',
 						cache: false,
-						data: { 'last': this.lastMessage, 'maxMessages': this.options.maxMessages },
+						data: { 'action': 'poll', 'last': this.lastMessage, 'maxMessages': this.options.maxMessages, 'type': this.options.type },
 						success: function(data) { that.duplicationCheck(data); },
 						complete: function() { if (!post) setTimeout(function() { that.poll(); } , that.timing.poll); }
 					});
 				} else if (this.options.type == 'long') {
 					$.ajax({
-						url: this.paths.xhrPoll,
+						url: this.paths.xhr,
 						dataType: 'json',
 						type: 'get',
 						cache: false,
 						timeout: this.timing.timeout,
-						data: { 'last': this.lastMessage, 'maxMessages': this.options.maxMessages },
+						data: { 'action': 'poll', 'last': this.lastMessage, 'maxMessages': this.options.maxMessages, 'type': this.options.type },
 						success: function(data) { that.duplicationCheck(data); },
 						complete: function() { if (!post) that.poll(); }
 					});
@@ -233,12 +207,12 @@
 				// Send message to WebSocket
 				this.webSocket.send(message);
 
-			} else if (this.paths.xhrPost) {
+			} else if (this.paths.xhr) {
 
 				// Run AJAX Post
 				var that = this;
 				$.ajax({
-					url: this.paths.xhrPost,
+					url: (this.paths.xhr.indexOf('?') != -1 ? this.paths.xhr : this.paths.xhr + '?') + 'action=post',
 					data: message,
 					type: 'post'
 				}).complete(function() { that.poll(true) });
@@ -260,7 +234,6 @@
 	ns.idle = function() {// Stop Refresh Actions
 		if (this.active) {
 			if (this.webSocket) this.destructWebSocket();
-			if (this.sse) this.destructSSE();
 			if (this.idleTimer) clearInterval(this.idleTimer);
 			this.active = false;
 		}
@@ -294,14 +267,102 @@
 		}
 	};
 
-	// Initialize boots up
-	ns.init = function() {
+
+	/* Display Generation Methods */
+
+	// Primary Generator, calls all methods in sequence
+	ns.generateDisplay = function() {
+		this.generateControlContainer();
+		this.generateFormControls();
+		this.generateMessageDisplay();
+		this.generateColorSelectors();
+	};
+
+	// Generate the container used to house Form Controls
+	ns.generateControlContainer = function() {
+		this.controls = $('<p>');
+		this.append(this.controls);
+	};
+
+	// Prepates the input textbox and submit button
+	ns.generateFormControls = function() {
+		this.controls.append($('<input type="text" name="message" /><input type="submit" value=">"/>'));
+	};
+
+	ns.generateMessageDisplay = function() {
 		this.messageDisplay = $("<div></div>");
 		if (this.options.display == "down") {
 			this.prepend(this.messageDisplay);
 		} else {
 			this.append(this.messageDisplay);
 		}
+	};
+
+	// Generate color controls
+	ns.generateColorSelectors = function() {
+		var that = this;
+		$.ajax({
+			url: '/chat/ChatAPI.php?action=getColors',
+			type: 'get',
+			success: function(data) {
+
+				// Store Colors
+				that.colors = {};
+				if (data && data.color) that.colors.color = data.color;
+				if (data && data.background) that.colors.background = data.background;
+
+			},
+			complete:function() {
+
+				// Generate Spectrum Color Setters & Append to form controls
+				var color = $('<input type="text" name="fcolor">');
+				var background = $('<input type="text" name="bcolor">');
+				var reset = $('<input type="button" value="Reset Colors">');
+				that.controls.append(color);
+				that.controls.append(background);
+				that.controls.append(reset);
+				color.spectrum({
+					color: (that.colors.color ? that.colors.color : ''),
+				    preferredFormat: "hex",
+				    change:function(nc) {
+				    	that.colors.color = nc.toHexString();
+				    	that.changeColors();
+				    }
+				});
+				background.spectrum({
+					color: (that.colors.background ? that.colors.background : ''),
+				    preferredFormat: "hex",
+				    change: function(nc) {
+				    	that.colors.background = nc.toHexString();
+				    	that.changeColors();
+				    }
+				});
+				reset.on('click', function() {
+					// Set both color codes to nothing & send Reset Colors AJAX call
+					$.ajax({
+						url: '/chat/ChatAPI.php?action=clearColors',
+						type: 'get'
+					});
+				});
+
+			}
+		});
+	};
+
+	// Sends setColors via AJAX to Chat API
+	ns.changeColors = function() {
+		// Run AJAX to setColors
+		$.ajax({
+			url: '/chat/ChatAPI.php?action=setColors',
+			type: 'get',
+			data: this.serialize()
+		});
+	};
+
+
+	// Initialize boots up
+	ns.init = function() {
+		this.generateDisplay();
 		this.start();
 	};
 

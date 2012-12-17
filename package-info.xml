@@ -5,7 +5,6 @@
 	<id>CDeLorme:SMF-ChatBox</id>
 	<type>modification</type>
 	<version>1.0</version>
-
 	<!-- 2.0.x -->
 	<install for="2.0 - 2.0.99">
 		<readme type="file" parsebbc="true">ar-scripts/readme.txt</readme>
