@@ -118,8 +118,19 @@ if (isset($_GET['action'])) {
 				$user_color = $user_profile[$context['user']['id']]['member_group_color'];
 
 				// if Message exists and is not empty, post it
-				if (isset($_POST['message']) && !empty($_POST['message']))
-					$smcFunc['db_query']('', 'INSERT INTO {db_prefix}chat (user_id, username, user_color, created_on, message) VALUES ({int:user_id}, {text:user}, {text:ucolor}, {int:date}, {text:message})', array( 'user_id' => $context['user']['id'], 'user' => $context['user']['username'], 'ucolor' => $user_color, 'message' => $_POST['message'], 'date' => time()));
+				if (isset($_POST['message']) && !empty($_POST['message'])) {
+
+					// Parse it first
+					$context['aeva_disable'] = 1;
+					$message = $_POST['message'];
+					$message = parse_bbc($message);
+					censorText($message);
+					unset($context['aeva_disable']);
+
+					// Run SQL
+					$smcFunc['db_query']('', 'INSERT INTO {db_prefix}chat (user_id, username, user_color, created_on, message) VALUES ({int:user_id}, {text:user}, {text:ucolor}, {int:date}, {text:message})', array( 'user_id' => $context['user']['id'], 'user' => $context['user']['username'], 'ucolor' => $user_color, 'message' => $message, 'date' => time()));
+
+				}
 
 			}
 		}
@@ -130,19 +141,44 @@ if (isset($_GET['action'])) {
 		if (isset($_GET['message_id'])) $message_id = $_GET['message_id'];
 		if (isset($_GET['user_id'])) $message_id = $_GET['user_id'];
 
-		if (isset($message_id)) {
+		// Get User ID by Message ID
+		if (!isset($user_id) && isset($message_id)) {
 
-			// Use an insert-select to ban by pulling from the message table
-			$query = "INSERT INTO {db_prefix}chat_banned (user_id) SELECT user_id FROM {db_prefix}chat WHERE id = {int:mid}";
+			$query = 'SELECT user_id FROM {db_prefix}chat WHERE id = {int:mid} LIMIT 1';
 			$args = array('mid' => $message_id);
-			$smcFunc['db_query']('', $query, $args);
+			$results = $smcFunc['db_query']('', $query, $args);
+			if ($smcFunc['db_num_rows']($results) == 1) $user_id = $smcFunc['db_fetch_assoc']($results)['user_id'];
 
-		} else if (isset($user_id)) {
+		}
 
-			// simply append user_id
-			$query = "INSERT INTO {db_prefix}chat_banned (user_id) VALUES ({int:uid})";
-			$args = array('uid' => $user_id);
-			$smcFunc['db_query']('', $query, $args);
+		if (isset($user_id)) {
+
+			// Is not self
+			if ($user_id != $context['user']['id']) {
+
+				// Run Insert
+				$query = 'INSERT INTO {db_prefix}chat_banned (user_id)
+					SELECT
+						t1.id_member
+					FROM
+						{db_prefix}members AS t1
+					LEFT JOIN {db_prefix}permissions AS t2
+					ON
+							t2.permission = "admin_chatbox"
+						AND
+							t1.id_group = t2.id_group
+					WHERE
+							t1.id_member = {int:uid}
+						AND
+							t1.id_group != 1
+						AND
+								(t2.add_deny IS NULL
+							OR
+								t2.add_deny != 1)';
+				$args = array('uid' => $user_id);
+				$smcFunc['db_query']('', $query, $args);
+
+			}
 
 		}
 
@@ -156,6 +192,10 @@ if (isset($_GET['action'])) {
 			$smcFunc['db_query']('', $query, $args);
 
 		}
+
+		// Return user to referrer
+		$ref = $_SERVER['HTTP_REFERER'];
+		header('Location: ' . $ref);
 
 	} else if ($action == 'getColors') {
 

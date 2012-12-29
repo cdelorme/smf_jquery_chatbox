@@ -83,6 +83,11 @@
 
 	};
 
+	// Override generateLinks to add chAdmin.php
+	ns.generateLinks = function() {
+		this.append('<p><a href="/chat/history.php">History</a><a href="/chat/chAdmin.php">Admin</a></p>');
+	}
+
 	// Override jQuery Plugin Generation to append new operations
 	$.fn.chatBox = function(options) {
 		$.extend(true, this, ns, options);// Extend "this" granting it all ChatBox Methods

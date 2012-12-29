@@ -204,7 +204,7 @@
 				// Attempt to create WebSocket if not yet set
 				if (!this.webSocket) this.createWebSocket();
 
-				// Send message to WebSocket
+				// Send message to WebSocket (NEED TO DEBUG THIS STILL)
 				this.webSocket.send(message);
 
 			} else if (this.paths.xhr) {
@@ -249,7 +249,7 @@
 	// Idle Event Check
 	ns.idleOut = function() {
 		this.idleCount++;
-		if (this.idleCount >= this.options.idle && this.options.idle != 0) this.idle();
+		if (this.options.idle != 0 && this.idleCount >= this.options.idle) this.idle();
 	};
 
 	// Allow Restarting (after stop())
@@ -257,10 +257,8 @@
 		if (!this.active) {
 			this.active = true;
 			var that = this;
-			if (this.options.type == 'long') {
-				this.idleCount = 0;
-				this.idleTimer = setInterval(function() { that.idleOut(); }, this.timing.poll);
-			}
+			this.idleCount = 0;
+			this.idleTimer = setInterval(function() { that.idleOut(); }, this.timing.poll);
 			this.poll();
 			this.off('submit');
 			this.on('submit', function() { that.post(); return false; });
@@ -276,6 +274,7 @@
 		this.generateFormControls();
 		this.generateMessageDisplay();
 		this.generateColorSelectors();
+		this.generateLinks();
 	};
 
 	// Generate the container used to house Form Controls
@@ -283,6 +282,11 @@
 		this.controls = $('<p>');
 		this.append(this.controls);
 	};
+
+	// Link for History
+	ns.generateLinks = function() {
+		this.append('<p><a href="/chat/history.php">History</a></p>');
+	}
 
 	// Prepates the input textbox and submit button
 	ns.generateFormControls = function() {

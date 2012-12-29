@@ -9,6 +9,9 @@
 #chatBox>p {
 	margin: 3px 0;
 }
+#chatBox>p a {
+	margin-left: 15px;
+}
 #chatBox>p input[type=text] {
 	padding: 5px;
 	font-size: 14px;
@@ -26,6 +29,7 @@
 	overflow-y: scroll;
 }
 #chatBox>div div {
+	padding-right: 45px;
 	font-size: 14px;
 	font-family: Helvetica, Georgia, sans-serif;
     line-height: 16px;
@@ -44,7 +48,7 @@
 }
 #chatBox>div div .admin {
 	float: right;
-	margin-right: 10px;
+	margin-right: -40px;
 }
 #chatBox>div .admin .ban {
 	float: left;
@@ -52,6 +56,7 @@
 	width: 24px;
 	height: 16px;
 	background: url('/chat/images/ban.png');
+	cursor: pointer;
 }
 #chatBox>div .admin .del {
 	float: left;
@@ -59,4 +64,5 @@
 	width: 19px;
 	height: 16px;
 	background: url('/chat/images/delete.png');
+	cursor: pointer;
 }
