@@ -12,21 +12,12 @@ If the installation fails to modify your theme, adding the chatbox can be done m
 
 	<!--Begin SMF-ChatBox-->
 	<div class="chat">
-		<form method="post" id="chatBox">
-			<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
-		</form>
+		<form method="post" id="chatBox"></form>
 		<script type="text/javascript">
 		<!--// Cloaking
 			// Pass Chatbox to establish instance
 			var cb = $("#chatBox").chatBox({
-				options: {
-					type: "long"
-				},
-				paths: {
-					xhrPost: "/chat/xhrPost.php",
-					xhrPoll: "/chat/xhrPoll.long.php",
-					ssePoll: "/chat/ssePoll.php"
-				}
+				paths: { xhr: "/chat/ChatAPI.php" }
 			});
 		//-->
 		</script>

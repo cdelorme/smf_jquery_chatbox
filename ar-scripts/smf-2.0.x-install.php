@@ -44,12 +44,13 @@ if ($db_error) {
 	return false;
 }
 
-// Create Main Table
+// Create Banned Table
 $smcFunc['db_query']('', 'CREATE TABLE IF NOT EXISTS {db_prefix}chat_banned (
-		id int unsigned,
+		id int unsigned auto_increment,
 		user_id int unsigned,
 		INDEX(user_id),
-		PRIMARY KEY (id)
+		PRIMARY KEY (id),
+		UNIQUE user_key (user_id)
 	)');
 
 // If Error Quit
@@ -59,14 +60,15 @@ if ($db_error) {
 	return false;
 }
 
-// Create Main Table
+// Create Colors Table
 $smcFunc['db_query']('', 'CREATE TABLE IF NOT EXISTS {db_prefix}chat_colors (
-		id int unsigned,
+		id int unsigned auto_increment,
 		user_id int unsigned,
 		color varchar(10),
 		background varchar(10),
 		INDEX(user_id),
-		PRIMARY KEY (id)
+		PRIMARY KEY (id),
+		UNIQUE user_key (user_id)
 	)');
 
 // If Error Quit

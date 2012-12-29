@@ -25,7 +25,7 @@
 // SMF-ChatBox - BEGIN
 $txt['permissiongroup_smfchatbox'] = 'SMF ChatBox';
 $txt['permissiongroup_simple_smfchatbox'] = 'SMF ChatBox';
-$txt['permissionname_admin_chatbox'] = 'Modarate Chatbox';
+$txt['permissionname_admin_chatbox'] = 'Moderate Chatbox';
 // SMF-ChatBox - END
 			]]></add>
 		</operation>
