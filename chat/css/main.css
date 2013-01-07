@@ -1,5 +1,6 @@
 
   /* Basic Non-Themed Chatbox Formatting */
+.chat { float: left; }
 #chatBox {
 	width: 800px;
 	max-height: 200px;
@@ -9,6 +10,10 @@
 #chatBox>p {
 	margin: 3px 0;
 }
+div#upper_section div.user #chatBox>p {
+        margin: 3px 0;
+        float: none;
+}
 #chatBox>p a {
 	margin-left: 15px;
 }
@@ -16,7 +21,7 @@
 	padding: 5px;
 	font-size: 14px;
 	border-radius: 8px;
-	width: 70%;
+	width: 65%;
 }
 #chatBox>p input[type=submit] {
 	border-radius: 8px;

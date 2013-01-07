@@ -36,7 +36,7 @@ if (isset($_GET['action'])) {
 	require_once("../SSI.php");
 
 	// Check permissions
-	$canDo = (isAllowedTo('admin_chatbox') || $context['user']['is_admin']);
+	$canDo = (allowedTo('admin_chatbox') || $context['user']['is_admin']);
 
 	// Confirm Action and Take Action!
 	if ($action == 'poll') {
@@ -199,6 +199,7 @@ if (isset($_GET['action'])) {
 
 	} else if ($action == 'getColors') {
 
+		$ucolors = array();
 		$grab_colors = $smcFunc['db_query']('', "SELECT color, background FROM {db_prefix}chat_colors WHERE user_id = {int:uid} LIMIT 1", array( 'uid' => $context['user']['id'] ));
 		if ($smcFunc['db_num_rows']($grab_colors) == 1) $ucolors = $smcFunc['db_fetch_assoc']($grab_colors);
 		print_r(json_encode($ucolors));

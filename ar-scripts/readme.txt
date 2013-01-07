@@ -1,5 +1,5 @@
 [center][color=green][size=18pt]SMF-ChatBox v1.0 - CDeLorme[/size][/color]
-[color=green]Simplistic ChatBox front-end using modern transitions and all modern communication methods.[/color][/center]
+[color=green]Simple ChatBox front-end using modern transitions and communication methods.[/color][/center]
 [hr]
 [center][url=http://www.cdelorme.com][b]Website[/b][/url][/center]
 [center][url=https://bitbucket.org/CDeLorme/smf-chatbox][b]BitBucket Repository[/b][/url][/center]
@@ -8,7 +8,7 @@
 
 [b]Instructions[/b]:
 
-If the installation fails to modify your theme, adding the chatbox can be done manually by adding jQuery, the ChatBox JavaScript file, and then copying these lines to the location you want the chatbox to be added:
+If the installation fails to modify your index.template.php file, you can manually add the chatbox to the location of your choosing by copying this block of code:
 
 	<!--Begin SMF-ChatBox-->
 	<div class="chat">
@@ -17,7 +17,9 @@ If the installation fails to modify your theme, adding the chatbox can be done m
 		<!--// Cloaking
 			// Pass Chatbox to establish instance
 			var cb = $("#chatBox").chatBox({
-				paths: { xhr: "/chat/ChatAPI.php" }
+				paths: {
+					xhr: "/chat/ChatAPI.php"
+				}
 			});
 		//-->
 		</script>
@@ -27,27 +29,35 @@ If the installation fails to modify your theme, adding the chatbox can be done m
 
 [b]Important Info[/b]:
 
-This ChatBox requires jQuery, but to prevent duplicate copies it is not installed by the install script.  Please add jQuery to your themes from an API such as Google, or upload your own copy.
+This ChatBox required jQuery but to prevent duplicate copies of jQuery from being installed (which can potentially break a site) it is expected that you will add this yourself.  This script has been tested with jQuery versions as old as 1.6, but it would be advisable to use the Google API or upload a newer version.
 
-The ChatBox supports a variety of modern JavaScript communication objects and support tools, and will fall-back to basic AJAX if they are unsupported.  These tools include EventSource (SSE/Server-Sent Events), WebSockets, and SharedWorker.  It also works with basic AJAX both short and long polling.
+The ChatBox is a jQuery Plugin, which makes it easy to create instances and modify or extend.  The administrative script should give you a good idea as to the possibilities.
 
-Apache servers do not work well with long polling, and to take advantage of WebSockets you will want to install an event driven server such as node.js.  Example code has been included with the package, as well as some basic instructions.
+Currently the chatbox supports short and long AJAX polling.
 
-The BitBucket source has comprehensive documentation on how to configure and manually adjust every component of the ChatBox.
+Apache servers are known to have problems with long polling, so be sure to test your configuration before pushing live if you intend to try Long Polling.
+
+For more comprehensive documentation please check out the BitBucket source, or you may open the markdown README included with this package.
+
+
+[b]Future Revisions[/b]
+
+Currently working to update the script so it supports SharedWorkers.  This addition would eliminate the load on supported browsers for users who keep multiple open tabs by sharing a single polling process.
+
+The system has the code in place for WebSockets, but this is an untested feature.
+
+WebSockets are best used with an event driven server, such as node.js.  In the future a revision will be released with a functional node.js script for demonstration and implementation.
 
 
 [b]Features[/b]:
 [list]
-	[li][i][u]Users[/u][/i]
-- User-selectable & Stored Colors
-- AJAX Short & Long Polling
-- EventSource (Server-Sent Events)
-- WebSockets
-- SharedWorker to eliminate load from multi-tabbed browsing
-- Ability to Ban Users
-- Ability to Delete (hide) Messages
-- Page to manage Banned Users (un-ban)
+	[li]User-selectable & Stored Colors[/li]
+	[li]AJAX Short & Long Polling
+	[li]Ability to Ban Users[/li]
+	[li]Ability to Delete (hide) Messages[/li]
+	[li]Page to manage Banned Users (un-ban)[/li]
 [/list]
 
 [b]Compatibility[/b]:
+- 2.0.3
 - 2.0.2

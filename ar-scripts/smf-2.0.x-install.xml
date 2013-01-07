@@ -37,19 +37,17 @@ $txt['permissionname_admin_chatbox'] = 'Moderate Chatbox';
 	echo $context['html_headers'];]]></search>
 			<add><![CDATA[
 
-
 	// BEGIN SMF-CHATBOX
 	if (empty($context['current_board']) && empty($context['current_topic'])) {
 		echo '
-		<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />';
+		<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />
+		<link href="/chat/css/spectrum.css?' . time() . '" rel="stylesheet" type="text/css" />';
 		echo '
-		<script type="text/javascript"  src="/chat/js/chatbox.js?' . time() . '"></script>';
-		if (isAllowedTo('admin_chatbox') || $context['user']['is_admin']) echo '
-		<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
-		echo '
-		<style type="text/css">
-			.chat { float: left; }
-		</style>';
+		<script type="text/javascript"  src="/chat/js/chatbox.js?' . time() . '"></script>
+		<script type="text/javascript"  src="/chat/js/spectrum.js?' . time() . '"></script>';
+		if (allowedTo('admin_chatbox') || $context['user']['is_admin']) {
+			echo '		<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
+		}
 	}
 	// END SMF-CHATBOX
 
@@ -193,24 +191,21 @@ $txt['permissionname_admin_chatbox'] = 'Moderate Chatbox';
 		/* Begin SMF-ChatBox*/
 		if (empty($context['current_board']) && empty($context['current_topic'])) {
 		echo '
-			<!--Begin SMF-ChatBox-->
-			<div class="chat">
-				<form method="post" id="chatBox">
-					<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
-				</form>
-				<script type="text/javascript">
-				<!--// Cloaking
-					// Pass Chatbox to establish instance
-					var cb = $("#chatBox").chatBox({
-						paths: {
-							xhrPost: "/chat/xhrPost.php",
-							xhrPoll: "/chat/xhrPoll.short.php"
-						}
-					});
-				//-->
-				</script>
-			</div>
-			<!--End SMF-ChatBox-->';
+				<!--Begin SMF-ChatBox-->
+				<div class="chat">
+					<form method="post" id="chatBox"></form>
+					<script type="text/javascript">
+					<!--// Cloaking
+						// Pass Chatbox to establish instance
+						var cb = $("#chatBox").chatBox({
+							paths: {
+								xhr: "/chat/ChatAPI.php"
+							}
+						});
+					//-->
+					</script>
+				</div>
+				<!--End SMF-ChatBox-->';
 		}
 		/* End SMF-ChatBox*/
 
@@ -349,21 +344,19 @@ $txt['permissionname_admin_chatbox'] = 'Moderate Chatbox';
 				</ul>
 			</p>';
 
+
 		/* Begin SMF-ChatBox*/
 		if (empty($context['current_board']) && empty($context['current_topic'])) {
 			echo '
 				<!--Begin SMF-ChatBox-->
 				<div class="chat">
-					<form method="post" id="chatBox">
-						<p><input type="text" name="message" /> <input type="submit" value=">"/></p>
-					</form>
+					<form method="post" id="chatBox"></form>
 					<script type="text/javascript">
 					<!--// Cloaking
 						// Pass Chatbox to establish instance
 						var cb = $("#chatBox").chatBox({
 							paths: {
-								xhrPost: "/chat/xhrPost.php",
-								xhrPoll: "/chat/xhrPoll.short.php"
+								xhr: "/chat/ChatAPI.php"
 							}
 						});
 					//-->

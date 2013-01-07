@@ -1,144 +1,173 @@
 
 # Project: SMF ChatBox
-## Date: 12/12/2012
+## Date: 01/06/2013
 ## Author: Casey DeLorme
 
 ---
 
 ## Description:
 
-This is a fork of my jQuery AJAX ChatBox revised for use with the Simple Machines Forum software.
+This is a fork of my jQuery AJAX ChatBox revised for use with Simple Machine Forums.
 
-The instructions remain the same, however it includes a package installation script and a whole folder, plus administrative operations and has been tailored to work with SMF.
+The instructions and operation remain quite similar, and some of the updates here will be pack-ported to the original source to enhance both, however this version is tailored to the SMF platform and includes a packaged installation script and comprehensive ChatAPI file.
 
-It supports Short and Long AJAX (XHR) Polling, Server-Sent Events (SSE/EventSource), and (**eventually**) WebSockets for communication.
+**Due to unforeseen limitations with stateful processing the SSE component has been removed from this version and will be removed from the original as well.**
 
-It will (**eventually**) take advantage of SharedWorkers in supported browsers to mitigate load for multi-tabbed browsing.
+Currently supporting AJAX short and long polling, and uses a database.
+
+Future revisions will feature SharedWorker implementations for supporting browsers as well as WebSockets, primarily using node.js for demonstrative scripts (but not limited to that platform for back-end).
 
 ---
 
 ## Support:
 
-Tested on:
+This system has been tested on Windows, Debian Linux, and OS X in the following browsers where applicable:
 
-- OS X
-	- FireFox (16)
-	- Aurora
-	- Chrome Dev Channel (25)
-	- Opera (12)
-	- Safari (6)
-- Debian Wheezy (Linux)
-	- Chrome Dev Channel (22)
-- Windows
-	- Chrome Dev Channel
-	- Aurora
-	- Opera
-	- IE 7-10
+- Chrome
+- FireFox
+- Opera
+- Safari
+- Internet Explorer 7, 8, 9 & 10
 
-Tests were performed with jQuery version 1.8.3.
+The tests were performed with jQuery version 1.8.3 off the Google API, with earlier tests working using jQuery 1.6.
 
 ---
 
 ## Usage:
 
-Add the script tag:
+This system relies on jQuery being included in SMF, if jQuery has not been implemented you will want to add it, perhaps using this line:
 
-	<script type='text/javascript' src='/js/chatBox.js'></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
-When the DOM is ready, grab your form with jQuery selectors and run the chatBox method, supplying it with required and optional values:
+The ChatBox uses the Spectrum jQuery Plugin for a color picker and will attempt to install it.  It also features an administrative script to enhance the ChatBox features adding message deletion and user banning operations.
 
-	var cb = $('#myForm').chatBox({
-		options: {
-			display: 'up'
-		},
-		paths: {
-			xhrPost: "/php/xhrPost.php",
-			xhrPoll: "/php/xhrPoll.short.php"
-		}
-	});
+To manually install the package:
 
+- Place the `chat` folder in public_html
+- Add the following lines to the header section of all index.template.php files:
 
-Now `cb` is a chatBox instance.  It will start automatically, and you can stop it manually with `cb..stop()`.
+	echo '
+	<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />
+	<link href="/chat/css/spectrum.css?' . time() . '" rel="stylesheet" type="text/css" />';
+	echo '
+	<script type="text/javascript"  src="/chat/js/chatbox.js?' . time() . '"></script>
+	<script type="text/javascript"  src="/chat/js/spectrum.js?' . time() . '"></script>';
+	if (allowedTo('admin_chatbox') || $context['user']['is_admin']) {
+		echo '		<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
+	}
+
+- Add this chatbox code to your themes index.template.php file anywhere you like:
+
+	<!--Begin SMF-ChatBox-->
+	<div class="chat">
+		<form method="post" id="chatBox"></form>
+		<script type="text/javascript">
+		<!--// Cloaking
+			// Pass Chatbox to establish instance
+			var cb = $("#chatBox").chatBox({
+				paths: {
+					xhr: "/chat/ChatAPI.php"
+				}
+			});
+		//-->
+		</script>
+	</div>
+	<!--End SMF-ChatBox-->
+
+I have created extensive documentation on how to modify and use the `cb` instance.
 
 ---
 
 ## Documentation:
 
-A ChatBox instance must be provided at least xhrPoll and xhrPost paths, everything else is optional or has defaults.
+**Basic Usage:**
 
+This ChatBox has been modified to be instantiated as a jQuery extended object, and multiple instances can be created on the same page with different setting.
 
-**Chatbox Paths**
+To create an instance simply target the containing object and then run the `.chatBox()` method, the object will be converted into a ChatBox instance and new methods will be available.  It will automatically begin communication.
 
-Extended from the paths object:
+You can stop a chatbox by running the `.stop()` method on it after.  Similarly you can start it by running the `.start()` method.
 
-- xhrPost
-- xhrPoll
-- ssePoll
-- webSocket
+This version has been modified to use a single API path which it relies on for all communication.
 
-By default expects xhrPost and xhrPoll to be provided.  Not all browsers support SSE or WebSockets, this ensures backwards compatibility.
-
-Server-Side code for the xhr operations must be tailored according to the Options `type` ("short" or "long") but timing can be adjusted via the Timing configuration.
-
-If SSE is set and supported it will override xhr Polling, but if WebSockets are set and supported they will override all other types.
-
-SSE is only server-to-client, so it only has a polling path, and must be used in conjunction with xhrPost.  If Options `type` is "short" it will send the server a retry-value in the path equal to the Timing `poll` value, which by default means every 5 seconds.  The default retry is 3 seconds, and if you are using long polling you should hard-code a short retry of 1000.
-
-WebSockets are two-way and use a single path.  This system assumes that same path can both send and receive messages.
-
-
-**Chatbox Timing**
+The ChatAPI contains the following operations:
 
 - poll
-- timeout
+- post
+- ban
+- unban
+- setColors
+- getColors
+- clearColors
+- delete
 
-The poll value is the number of milliseconds between each request to the server.  This is used in short polling and for reconnection times with long polling.  Its default value is 5000 (5 seconds).
+The colors system is specific to this version, it allows users to customize their chat appearance in the ChatBox, including background and foreground text.
 
-The timeout value is for xhr (AJAX) long polling only, and defaults to 50000 (50 seconds).  It is the amount of time an xhrPoll will remain open and waiting for the server to finish before being canceled by the client.  You may want to make sure your server script is set to stop after this timeout as well.
+---
 
+**ChatBox Configuration:**
 
-**Chatbox Options**
+You can modify the ChatBox by passing objects to the `.chatBox()` method.  Here is the list of objects and their purpose:
 
-- type
-- idle
-- maxMessages
-- display
-
-The type represents the selected polling type, defaulting to "short" but accepting "long" as an alternative.
-
-The idle value is the multiple of the Timing `poll` interval prior to temporarily shutting down the Chatbox.  By default an idle of 36 with the 5 second poll gives the Chatbox 3 minutes to idle.  If set to 0 it will never idle.
-
-The maxMessages changes the number of messages to render on screen, all messages beyond it will be removed to keep the message area from becoming enormous.  The default is 20 messages.
-
-The display option allows you to choose whether new messages post upward or downward.  By default it is "down" which keeps the input below the messages, and new messages are appended at the bottom.  If set to "up" the input will be at the top and new messages will be preprended above the last message.
+- options
+	- type - Default is short, long is an available option but compatibility is dependent on your web server.
+	- maxMessages - Default is 20, you can increase or decrease this value to change the number of messages to display on the page.
+	- display - Default is down, and this can be used to determine the placement of the input text area and the message directional flow.
+	- idle - Count of iterations before it ceases polling, 0 is indefinite, but a default of 36 is imposed.
+- timing
+	-
 
 
-**Want to change how the messages are displayed?**
+Example of instantiation with modified options:
 
-The system has four render methods that manage displaying the content.
+	cb.chatBox({
+		options: {
+			type: "long",
+			display: "up"
+		},
+		timing: {
+			poll: 1000,
+			timeout: 30000
+		},
+		paths: {
+			xhr: "/chat/ChatAPI.php"
+		}
+	});
 
-- stampTime(unix_time)
-- removeOldRenderMessages
-- renderNewMessages(messages)
-- scrollEvent
+This will use the ChatAPI for all xhr/AJAX operations, it will use long polling with a timeout of 30 seconds.  The poll value is used for the idle count which results in 36*1000 or 36 seconds of idle to stop polling.  Finally display is set to up, which will place the input above the messages and new messages will be prepended to the top.
 
-You can modify them directly, or replace them by passing new methods when you instantiate the ChatBox.
 
-The stampTime method converts a unix timestamp into a display-friendly time-stamp.
 
-The removeOldRenderMessages removes any messages above the maxMessages value.  It is animated.
+**Override Functionality:**
 
-The renderNewMessages receives a JSOn array of new messages, and creates the HTML around them, then animates them into view.
+If you do not like the way something is handled, you can modify it in the source directly, or using the exact same approach as above you can replace the method by writing a new one when instantiating.
 
-The scrollEvent method scrolls to the top or bottom of the list when a new message is displayed.
+For example, if you would rather not have animated rendering of new messages you can do this:
+
+	cb.chatBox({
+		paths: { xhr: "/chat/ChatAPI.php" },
+		renderNewMessages = function(data) {
+			var divs = [];
+			for (var x = 0, len = data.length; x < len; x++) divs[divs.length] = this.renderMessage(data[x]);
+			if (this.options.display == 'down') {
+				for (var x = divs.length - 1; x >= 0; x--) divs[x].appendTo(this.messageDisplay);
+			} else {
+				for (var x = 0, len = divs.length; x < data.length; x++) divs[x].prependTo(this.messageDisplay);
+			}
+		}
+	});
+
+Now that specific instance of the chatBox will not animate new messages with slideDown, and your changes aren't applied globally and you don't have to worry about breaking the original code base.
+
+For a complete list of methods you will want to view the chatbox.js source code, all methods can be replaced but you may have to be careful to retain variable references such as the "this" object.
 
 ---
 
 ## Developer Notes:
 
-Apache servers do not play nice with long polling, unless you have researched this topic and know it will work, I recommend leaving it on the default short polling method.
+Apache servers do not play nice with long polling, unless you have researched this topic and modified or tested your web server, I recommend using short polling.
 
-This was tested extensively on an nginx server with success using Long Polling without setting up the HTTP Push module in the nginx configuration (the module was installed just not configured).
+This system has been tested on an nginx server using all available methods.  If you encounter bugs using it in another server platform please let me know or post a bug in the issue tracker so I can look into fixing it.
 
 ---
 

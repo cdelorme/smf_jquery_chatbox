@@ -64,7 +64,7 @@
 	// Render New Messages
 	ns.renderNewMessages = function(data) {
 		var divs = [];
-		for (var x = 0, len = data.length; x < len; x++) divs[divs.length] = this.renderMessage(data[x]);
+		for (var x = 0, len = data.length; x < len; x++) divs[divs.length] = this.renderMessage(data[x]).hide();
 		if (this.options.display == 'down') {
 			for (var x = divs.length - 1; x >= 0; x--) divs[x].appendTo(this.messageDisplay).slideDown(200);
 		} else {
