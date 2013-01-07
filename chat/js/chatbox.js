@@ -214,8 +214,9 @@
 				$.ajax({
 					url: (this.paths.xhr.indexOf('?') != -1 ? this.paths.xhr : this.paths.xhr + '?') + 'action=post',
 					data: message,
-					type: 'post'
-				}).complete(function() { that.poll(true) });
+					type: 'post',
+					complete: function() { that.poll(true); }
+				});
 
 			}
 

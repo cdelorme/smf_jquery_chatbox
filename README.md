@@ -46,6 +46,7 @@ To manually install the package:
 - Place the `chat` folder in public_html
 - Add the following lines to the header section of all index.template.php files:
 
+```
 	echo '
 	<link href="/chat/css/main.css?' . time() . '" rel="stylesheet" type="text/css" />
 	<link href="/chat/css/spectrum.css?' . time() . '" rel="stylesheet" type="text/css" />';
@@ -55,9 +56,11 @@ To manually install the package:
 	if (allowedTo('admin_chatbox') || $context['user']['is_admin']) {
 		echo '		<script type="text/javascript"  src="/chat/js/chatbox.admin.js?' . time() . '"></script>';
 	}
+```
 
 - Add this chatbox code to your themes index.template.php file anywhere you like:
 
+```
 	<!--Begin SMF-ChatBox-->
 	<div class="chat">
 		<form method="post" id="chatBox"></form>
@@ -73,6 +76,7 @@ To manually install the package:
 		</script>
 	</div>
 	<!--End SMF-ChatBox-->
+```
 
 I have created extensive documentation on how to modify and use the `cb` instance.
 
