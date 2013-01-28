@@ -41,14 +41,11 @@ if (isset($_GET['action'])) {
 	// Confirm Action and Take Action!
 	if ($action == 'poll') {
 
-		// Acquire User Offset
-		$offset = 3600 * $user_info['time_offset'];
-
 		// Use max messages or a default of 10
 		$maxMessages = (isset($_GET['maxMessages']) ? $_GET['maxMessages'] : 10);
 
-		// Grab last message timestamp from request
-		$last = (isset($_GET['last']) ? ($_GET['last'] + $offset) : 1);
+		// Grab last message id from poll request
+		$last = (isset($_GET['last']) ? $_GET['last'] : 0);
 
 		// Prepare Query String & Args
 		$query = 'SELECT
@@ -60,15 +57,15 @@ if (isset($_GET['action'])) {
 			t2.color,
 			t2.background
 		FROM {db_prefix}chat AS t1
-		LEFT JOIN {db_prefix}chat_colors AS t2
+		LEFT JOIN {db_prefix}chat_settings AS t2
 		ON t1.user_id = t2.user_id
-		WHERE created_on > {int:last}
+		WHERE t1.id > {int:last}
 		ORDER BY created_on DESC
 		LIMIT 0,{int:max}';
 		$args = array(
 			'max' => $maxMessages,
 			'last' => $last,
-			'offset' => $offset
+			'offset' => $user_info['time_offset'] * 3600
 		);
 
 		// Check Polling Type
@@ -116,6 +113,7 @@ if (isset($_GET['action'])) {
 				// Grab user_color from Crazy Deep SMF User Data
 				loadMemberData(Array($context['user']['id']), false, 'profile');
 				$user_color = $user_profile[$context['user']['id']]['member_group_color'];
+				if (empty($user_color)) $user_color = "";
 
 				// if Message exists and is not empty, post it
 				if (isset($_POST['message']) && !empty($_POST['message'])) {
@@ -128,7 +126,7 @@ if (isset($_GET['action'])) {
 					unset($context['aeva_disable']);
 
 					// Run SQL
-					$smcFunc['db_query']('', 'INSERT INTO {db_prefix}chat (user_id, username, user_color, created_on, message) VALUES ({int:user_id}, {text:user}, {text:ucolor}, {int:date}, {text:message})', array( 'user_id' => $context['user']['id'], 'user' => $context['user']['username'], 'ucolor' => $user_color, 'message' => $message, 'date' => time()));
+					$smcFunc['db_query']('', 'INSERT INTO {db_prefix}chat (user_id, username, user_color, created_on, message) VALUES ({int:user_id}, {text:user}, {text:ucolor}, {int:date}, {text:message})', array( 'user_id' => $context['user']['id'], 'user' => $context['user']['name'], 'ucolor' => $user_color, 'message' => $message, 'date' => time()));
 
 				}
 
@@ -197,10 +195,10 @@ if (isset($_GET['action'])) {
 		$ref = $_SERVER['HTTP_REFERER'];
 		header('Location: ' . $ref);
 
-	} else if ($action == 'getColors') {
+	} else if ($action == 'getSettings') {
 
 		$ucolors = array();
-		$grab_colors = $smcFunc['db_query']('', "SELECT color, background FROM {db_prefix}chat_colors WHERE user_id = {int:uid} LIMIT 1", array( 'uid' => $context['user']['id'] ));
+		$grab_colors = $smcFunc['db_query']('', "SELECT color, background, timestamps, colors FROM {db_prefix}chat_settings WHERE user_id = {int:uid} LIMIT 1", array( 'uid' => $context['user']['id'] ));
 		if ($smcFunc['db_num_rows']($grab_colors) == 1) $ucolors = $smcFunc['db_fetch_assoc']($grab_colors);
 		print_r(json_encode($ucolors));
 
@@ -217,26 +215,41 @@ if (isset($_GET['action'])) {
 		if (count($args) > 0) {
 
 			// Check if record exists
-			$exists = $smcFunc['db_query']('', 'SELECT id FROM {db_prefix}chat_colors WHERE user_id = {int:uid}', array('uid' => $context['user']['id']));
+			$exists = $smcFunc['db_query']('', 'SELECT id FROM {db_prefix}chat_settings WHERE user_id = {int:uid}', array('uid' => $context['user']['id']));
 			if ($smcFunc['db_num_rows']($exists) == 0) {
 
 				// Insert
-				$query = 'INSERT INTO {db_prefix}chat_colors (user_id, color, background) VALUES ({int:uid}, {text:color}, {text:background})';
+				$query = 'INSERT INTO {db_prefix}chat_settings (user_id, color, background) VALUES ({int:uid}, {text:color}, {text:background})';
 				$smcFunc['db_query']('', $query, $args);
 
 			} else {
 
 				// Update
-				$query = 'UPDATE {db_prefix}chat_colors SET color = IF({text:color} = "", color, {text:color}), background = IF({text:background} = "", background, {text:background}) WHERE user_id = {int:uid}';
+				$query = 'UPDATE {db_prefix}chat_settings SET color = IF({text:color} = "", color, {text:color}), background = IF({text:background} = "", background, {text:background}) WHERE user_id = {int:uid}';
 				$smcFunc['db_query']('', $query, $args);
 
 			}
 
 		}
-	} else if ($action == 'clearColors') {
+
+	} else if ($action == 'resetColors') {
 
 		// Remove record of users colors
-		$query = 'DELETE FROM {db_prefix}chat_colors WHERE user_id = {int:uid}';
+		$query = 'UPDATE {db_prefix}chat_settings SET color=NULL, background=NULL WHERE user_id = {int:uid}';
+		$args = array('uid' => $context['user']['id']);
+		$smcFunc['db_query']('', $query, $args);
+
+	} else if ($action == 'toggleColors') {
+
+		// Toggle Colors
+		$query = "INSERT INTO {db_prefix}chat_settings (user_id, colors) VALUES ({int:uid}, 0) ON DUPLICATE KEY UPDATE colors = !colors";
+		$args = array('uid' => $context['user']['id']);
+		$smcFunc['db_query']('', $query, $args);
+
+	} else if ($action == 'toggleTimestamps') {
+
+		// Query to swap 1/0 bit for timestamp setting
+		$query = "INSERT INTO {db_prefix}chat_settings (user_id, timestamps) VALUES ({int:uid}, 0) ON DUPLICATE KEY UPDATE timestamps = !timestamps";
 		$args = array('uid' => $context['user']['id']);
 		$smcFunc['db_query']('', $query, $args);
 

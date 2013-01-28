@@ -51,7 +51,7 @@ $query = 'SELECT
 		t2.color,
 		t2.background
 	FROM {db_prefix}chat AS t1
-	LEFT JOIN {db_prefix}chat_colors AS t2
+	LEFT JOIN {db_prefix}chat_settings AS t2
 	ON t1.user_id = t2.user_id
 	ORDER BY created_on DESC
 	LIMIT {int:page},100';

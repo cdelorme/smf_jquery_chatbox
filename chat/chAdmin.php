@@ -1,6 +1,6 @@
 <?php require_once("../SSI.php");
 // Check permissions
-$canDo = (isAllowedTo('admin_chatbox') || $context['user']['is_admin']);
+$canDo = (allowedTo('admin_chatbox') || $context['user']['is_admin']);
 if (!$canDo) header( 'Location: /'); ?>
 <!doctype html>
 <html>

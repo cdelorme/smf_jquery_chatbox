@@ -1,18 +1,117 @@
 
   /* Basic Non-Themed Chatbox Formatting */
-.chat { float: left; }
+.chat {
+	float: left;
+}
 #chatBox {
+	position: relative;
 	width: 800px;
 	max-height: 200px;
 	margin: 0 auto;
 	overflow: hidden;
 }
+
+
+  /* Message Area */
+#chatBox .messages {
+	max-height: 150px;
+	overflow-y: scroll;
+}
+#chatBox .messages>p {
+	font-size: 14px;
+	font-family: Helvetica, Georgia, sans-serif;
+    line-height: 16px;
+    padding-right: 5px;
+	margin: 0;
+	margin-bottom: 5px;
+}
+#chatBox .messages>p:hover {
+	opacity: 0.75;
+}
+#chatBox .messages>p .cb_timestamp {
+	font-size: 10px;
+	font-style: italic;
+	margin-right: 8px;
+}
+#chatBox .messages>p .cb_username {
+	margin-right: 10px;
+	font-weight: bold;
+}
+
+
+  /* Admin Message Controls */
+#chatBox .cb_panel p a {
+	padding: 0px 5px;
+}
+#chatBox .messages>p {
+	padding-right: 50px;
+}
+#chatBox .messages .admin {
+	float: right;
+	margin-right: -40px;
+}
+#chatBox .admin .ban {
+	float: left;
+	display: block;
+	width: 24px;
+	height: 16px;
+	background: url('/chat/images/ban.png');
+	cursor: pointer;
+}
+#chatBox .admin .del {
+	float: left;
+	display: block;
+	width: 19px;
+	height: 16px;
+	background: url('/chat/images/delete.png');
+	cursor: pointer;
+}
+
+
+  /* ChatBox Control Panel */
+#chatBox .cb_gear {
+	display: block;
+	height: 34px;
+	width: 34px;
+	background: url('/chat/images/config.png') no-repeat;
+	opacity: 0.75;
+	float: left;
+}
+#chatBox .cb_gear:hover {
+	opacity: 1.0;
+}
+#chatBox .cb_panel {
+	position: absolute;
+	top: 0;
+	display: block;
+	width: 200px;
+	height: 160px;
+	overflow: hidden;
+	background: rgb(15, 15, 15);
+	background: rgba(15, 15, 15, 0.85);
+}
+#chatBox .cb_panel p {
+	margin: 10px 2px;
+}
+#chatBox .cb_panel .on {
+	margin: 5px 8px 5px 2px;
+	padding: 2px;
+	border-radius: 5px;
+	background: green;
+	cursor: pointer;
+}
+#chatBox .cb_panel .off {
+	margin: 5px 8px 5px 2px;
+	padding: 2px;
+	border-radius: 5px;
+	background: red;
+	cursor: pointer;
+}
+
+
+  /* Form */
 #chatBox>p {
 	margin: 3px 0;
-}
-div#upper_section div.user #chatBox>p {
-        margin: 3px 0;
-        float: none;
 }
 #chatBox>p a {
 	margin-left: 15px;
@@ -21,7 +120,7 @@ div#upper_section div.user #chatBox>p {
 	padding: 5px;
 	font-size: 14px;
 	border-radius: 8px;
-	width: 65%;
+	width: 520px;
 }
 #chatBox>p input[type=submit] {
 	border-radius: 8px;
@@ -29,45 +128,22 @@ div#upper_section div.user #chatBox>p {
 	padding: 5px;
 	margin-right: 10px;
 }
-#chatBox>div {
-	max-height: 150px;
-	overflow-y: scroll;
+
+
+  /* Override formatting for specific themes */
+div#upper_section div.user #chatBox>p {
+        margin: 3px 0;
+        float: none;
 }
-#chatBox>div div {
-	padding-right: 45px;
-	font-size: 14px;
-	font-family: Helvetica, Georgia, sans-serif;
-    line-height: 16px;
+div#upper_section div.user {
+	width: auto;
 }
-#chatBox>div div:hover {
-	opacity: 0.75;
+.user .myavatar {
+    padding: 0.7em;
+    border-right: 1px solid #1E1E1E;
+    margin: 0 0.5em 0 0;
+    float: left;
 }
-#chatBox>div .datestamp {
-	font-size: 10px;
-	font-style: italic;
-	margin-right: 8px;
-}
-#chatBox>div .username {
-	margin-right: 10px;
-	font-weight: bold;
-}
-#chatBox>div div .admin {
-	float: right;
-	margin-right: -40px;
-}
-#chatBox>div .admin .ban {
-	float: left;
-	display: block;
-	width: 24px;
-	height: 16px;
-	background: url('/chat/images/ban.png');
-	cursor: pointer;
-}
-#chatBox>div .admin .del {
-	float: left;
-	display: block;
-	width: 19px;
-	height: 16px;
-	background: url('/chat/images/delete.png');
-	cursor: pointer;
+div#upper_section div.user .messages p {
+	float: none;
 }
