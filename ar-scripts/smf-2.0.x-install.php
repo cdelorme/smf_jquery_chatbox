@@ -60,21 +60,24 @@ if ($db_error) {
 	return false;
 }
 
-// Create Colors Table
-$smcFunc['db_query']('', 'CREATE TABLE IF NOT EXISTS {db_prefix}chat_colors (
+// Create Settings Table
+$smcFunc['db_query']('', 'CREATE TABLE IF NOT EXISTS {db_prefix}chat_settings (
 		id int unsigned auto_increment,
 		user_id int unsigned,
 		color varchar(10),
 		background varchar(10),
+		timestamps tinyint(1) DEFAULT 1,
+		colors tinyint(1) DEFAULT 1,
 		INDEX(user_id),
 		PRIMARY KEY (id),
 		UNIQUE user_key (user_id)
 	)');
 
+
 // If Error Quit
 $db_error = @$smcFunc['db_error']($db_connection);
 if ($db_error) {
-	echo "Failed to Create ChatBox Color Table, review this error and try again: " . $db_error;
+	echo "Failed to Create ChatBox Settings Table, review this error and try again: " . $db_error;
 	return false;
 }
 

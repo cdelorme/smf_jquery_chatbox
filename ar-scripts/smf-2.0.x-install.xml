@@ -317,9 +317,10 @@ $txt['permissionname_admin_chatbox'] = 'Moderate Chatbox';
 			<add><![CDATA[// If the user is logged in, display stuff like their name, new messages, etc.
 	if ($context['user']['is_logged'])
 	{
+		echo '
+				<div class="avatar">'
 		if (!empty($context['user']['avatar']))
-			echo '
-				<p class="avatar">', $context['user']['avatar']['image'], '
+			echo $context['user']['avatar']['image'], '
 				<ul class="reset">
 					<li class="greeting">', $txt['hello_member_ndt'], ' <span>', $context['user']['name'], '</span></li>
 					<li><a href="', $scripturl, '?action=unread">', $txt['unread_since_visit'], '</a></li>
@@ -342,7 +343,7 @@ $txt['permissionname_admin_chatbox'] = 'Moderate Chatbox';
 		echo '
 					<li>', $context['current_time'], '</li>
 				</ul>
-			</p>';
+			</div>';
 
 
 		/* Begin SMF-ChatBox*/
